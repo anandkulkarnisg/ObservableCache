@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for item in $(ls *.cpp)
+do
+	binaryName=${item%.cpp}.out
+	g++ -std=c++17 -I.. $item -lpthread -L.. -lObservableCache -o $binaryName	
+done
+
