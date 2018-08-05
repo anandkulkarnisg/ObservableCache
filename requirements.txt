@@ -1,0 +1,23 @@
+
+Component Name : ObservableCache
+Author : Anand Kulkarni
+Date : 30/07/2018
+Language : C++.
+
+requirement : 
+
+1. The cache should provide a generic interface which helps implement a cache either via poll/pull latest data to keep cache updated or via pump/push method [ Ex:- reuters event listener ].
+2. The cache should provide interface for regular updates to it [ either in batch mode / real time based on implementation. ]
+3. The cache should provide facility to multiple client threads with in the process to access the cache for queries as well as recieve real time updates that are coming into the Cache.
+4. Underlying cache implementations may differ hence generic interface must be provided for design.
+
+
+Notes :
+
+1. Cache real time updates sent to listening threads must be in parallel and not queued up [ This is not responsibility of designer of observer pattern. 
+   If the onTick implementer suspects a delay [ like dbWriter which can get stuck on db blocking etc ] should own the responsibility of storing the event and immediately 
+   returning and then processing it later/parallel in another thread.
+
+2. Should be able to handle the lapsed listner problem.
+3. overall performance should be as fast and responsive as possible.
+4. The cache is supposed to provide both onEvent update to the registered clients as well as allow somebody to read from cache.
