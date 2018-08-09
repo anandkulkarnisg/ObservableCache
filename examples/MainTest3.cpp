@@ -8,7 +8,7 @@
 
 using namespace std;
 
-ObservableCache cache(10);
+ObservableCache<std::string, std::string> cache(10);
 bool finish = false;
 bool mainWait = false;
 

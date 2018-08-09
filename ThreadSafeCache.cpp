@@ -6,13 +6,13 @@
 using namespace std;
 
 // Constructor implementation.
-ThreadSafeCache::ThreadSafeCache()
+template<typename T1, typename T2> ThreadSafeCache<T1,T2>::ThreadSafeCache()
 {
 
 }
 
 // Get Function to get an item from the ThreadSafeCache. returns the value of a key if this is present in the cache.
-std::string ThreadSafeCache::get(const std::string& keyItem)
+template<typename T1, typename T2> T2 ThreadSafeCache<T1,T2>::get(const T1& keyItem)
 {
 	// Take a read only lock and then try to identify if the item is present in the cache.
 	std::shared_lock<std::shared_mutex> lock(m_readWriteMutex);	
@@ -21,14 +21,14 @@ std::string ThreadSafeCache::get(const std::string& keyItem)
 	if( iter != m_InternalThreadSafeCache.end())
 	{
 		lock.unlock();
-		return(iter->second);		
+		return(iter->second);
 	}
 
 	return(nullptr);
 }
 
 // Method that does the cache update with a given item.
-bool ThreadSafeCache::upsert(const std::pair<std::string, std::string>& upsertItem)
+template<typename T1, typename T2> bool ThreadSafeCache<T1,T2>::upsert(const std::pair<T1, T2>& upsertItem)
 {
 	// Attempt to insert the item into the cache. If the key is found then check the value. If both are same then reject. If the value is updated/new then accept and update the cache.
 	// First of all check if the cache has the item and if the value is also same. Else only proceed.
@@ -42,7 +42,7 @@ bool ThreadSafeCache::upsert(const std::pair<std::string, std::string>& upsertIt
 	if( iter == m_InternalThreadSafeCache.end())
 	{
 		updateRequired = true;	
-	}	
+	}
 	else
 	{
 		if(!(iter->first == upsertItem.first && iter->second == upsertItem.second))
@@ -63,8 +63,10 @@ bool ThreadSafeCache::upsert(const std::pair<std::string, std::string>& upsertIt
 	return(updateRequired);
 }
 
-size_t ThreadSafeCache::size() const
+template<typename T1, typename T2> size_t ThreadSafeCache<T1,T2>::size() const
 {
 	std::shared_lock<std::shared_mutex> lock(m_readWriteMutex);
 	return(m_InternalThreadSafeCache.size());	
 }
+
+template class ThreadSafeCache<std::string, std::string>;

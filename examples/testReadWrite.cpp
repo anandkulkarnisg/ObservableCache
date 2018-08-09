@@ -9,7 +9,7 @@
 
 using namespace std;
 
-std::shared_ptr<ThreadSafeCache> ptr(new ThreadSafeCache);
+std::shared_ptr<ThreadSafeCache<std::string, std::string>> ptr(new ThreadSafeCache<std::string, std::string>);
 int i=0;
 
 void funcWrite()

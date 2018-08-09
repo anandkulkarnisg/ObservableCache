@@ -16,16 +16,16 @@ using namespace std;
 #ifndef ThreadSafeCache_H
 #define ThreadSafeCache_H
 
-class ThreadSafeCache : private boost::noncopyable
+template<typename T1, typename T2> class ThreadSafeCache : private boost::noncopyable
 {
 	private:
-		std::map<std::string, std::string> m_InternalThreadSafeCache;
+		std::map<T1, T2> m_InternalThreadSafeCache;
 		mutable std::shared_mutex m_readWriteMutex;
 
 	public:
 		ThreadSafeCache();													// Default constructor.	
-		bool upsert(const std::pair<std::string, std::string>&);		    // This method is used to update the cache , returns a status if update was successfull / fail.
-		std::string get(const std::string&);								// get an Item from cache in read only mode.
+		bool upsert(const std::pair<T1, T2>&);							    // This method is used to update the cache , returns a status if update was successfull / fail.
+		T2 get(const T1&);													// get an Item from cache in read only mode.
 		size_t size() const;												// return the size of map.
 };
 

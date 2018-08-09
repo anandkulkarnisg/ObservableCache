@@ -5,7 +5,7 @@
 
 using namespace std;
 
-ObservableCache testCache(10);
+ObservableCache<std::string, std::string> testCache(10);
 
 int main(int argc, char* argv[])
 {
