@@ -1,0 +1,11 @@
+
+Requirements:-
+~~~~~~~~~~~~~~~~
+
+1. Implement a sample application using observable cache. It should have an input thread that is processing data from a source [ in this demo use file as a source ].
+2. The cache should store this value that is incoming. The cache has two reader threads that frequently run queries against the cache for data.
+3. There are 3 event listners on the cache. two are file based , another is db based. 
+4. Ensure that the design has proper logging , app configuration and slow observers being considered in design.
+   In which case they should implement their own thread for processing and return as fast as possible from the notify / onTick processing.
+
+

@@ -53,7 +53,7 @@ bool ObservableCache::unsubscribe(const std::shared_ptr<Callback>& eventListner)
 
 	if(isFound)
 	{
-		m_eventListners.erase(m_eventListners.begin() + idx);		
+		m_eventListners.erase(m_eventListners.begin() + idx);
 	}
 	lock.unlock();
 	return(isFound);
@@ -79,12 +79,12 @@ bool ObservableCache::put(const std::pair<std::string , std::string>& pairRef)
 	returnStatus = m_internalCache.upsert(pairRef);
 	if(returnStatus)
 	{
-		std::shared_lock<std::shared_mutex> lock(m_mutex);
+		std::shared_lock<std::shared_mutex> lock(m_mutex); // Our aim is to publish as fast as possible. It is upto the listner to handle these events incoming via onTick as fast as possible.
 		for(const auto& iter : m_eventListners)
 		{
 			if(!iter.expired())
 			{
-				auto sp = iter.lock();
+				auto sp = iter.lock();	// Double check if iter expiry needed as weak_ptr expired false indication may turn out to be racy in multi threaded code.
 				if(!iter.expired())
 				{
 					sp->onTick(pairRef);	
@@ -103,7 +103,7 @@ int ObservableCache::evict()
 	// We need a exclusive write lock on the m_eventListners to clean it up.
 	std::unique_lock<std::shared_mutex> lock(m_mutex);
 	int startSize = m_eventListners.size();
-	m_eventListners.erase(std::remove_if(m_eventListners.begin(), m_eventListners.end(), [&](const std::weak_ptr<Callback>& ptr){return ptr.expired();}), m_eventListners.end());	
+	m_eventListners.erase(std::remove_if(m_eventListners.begin(), m_eventListners.end(), [&](const std::weak_ptr<Callback>& ptr){return ptr.expired();}), m_eventListners.end());
 	int endSize = m_eventListners.size();
 	lock.unlock();
 	lapseCount=startSize-endSize;

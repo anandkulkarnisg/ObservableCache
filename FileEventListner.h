@@ -1,6 +1,7 @@
 #include<iostream>
 #include<string>
 #include<fstream>
+#include<mutex>
 
 #include "Callback.h"
 
@@ -13,6 +14,7 @@ class FileEventListner : public Callback
 {
 	private:
 		std::ofstream m_outPutFileStream;
+		std::mutex m_mutex;						// Added the mutex so that the onTick can handle events properly without threads overrunning each other.
 
 	public:
 		FileEventListner(const std::string& fileName)
@@ -22,11 +24,13 @@ class FileEventListner : public Callback
 
 		void onTick(const std::pair<std::string, std::string>& pairRef)
 		{
+			std::lock_guard<std::mutex> lock(m_mutex);
 			m_outPutFileStream << "recieved an event with key = " << pairRef.first << " , and value = " << pairRef.second << '\n';
 		}
 
 		void onStale()
 		{
+			std::lock_guard<std::mutex> lock(m_mutex);
 			m_outPutFileStream << "recived a stale event from the publishing thread." << '\n';
 		}
 
