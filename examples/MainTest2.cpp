@@ -24,9 +24,9 @@ void writeToCache(const std::string& seed, const long& count)
 
 void addEventSubscriptions()
 {
-	std::shared_ptr<Callback> listner1(new StreamEventListner);
-	std::shared_ptr<Callback> listner2(new FileEventListner("output.txt"));
-	std::shared_ptr<Callback> listner3(new FileEventListner("output2.txt"));
+	std::shared_ptr<Callback> listner1(new StreamEventListner<std::string, std::string>());
+	std::shared_ptr<Callback> listner2(new FileEventListner<std::string, std::string>("output.txt"));
+	std::shared_ptr<Callback> listner3(new FileEventListner<std::string, std::string>("output2.txt"));
 
 	cache.subscribe(listner1);
 	cache.subscribe(listner2);

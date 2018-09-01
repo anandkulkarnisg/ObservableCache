@@ -10,7 +10,7 @@ using namespace std;
 #ifndef FileEventListner_H
 #define FileEventListner_H
 
-class FileEventListner : public Callback
+template<typename T1, typename T2> class FileEventListner : public Callback
 {
 	private:
 		std::ofstream m_outPutFileStream;
@@ -22,7 +22,7 @@ class FileEventListner : public Callback
 			m_outPutFileStream.open(fileName);
 		}
 
-		void onTick(const std::pair<std::string, std::string>& pairRef)
+		void onTick(const std::pair<T1, T2>& pairRef)
 		{
 			std::lock_guard<std::mutex> lock(m_mutex);
 			m_outPutFileStream << "recieved an event with key = " << pairRef.first << " , and value = " << pairRef.second << '\n';

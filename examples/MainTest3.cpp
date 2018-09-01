@@ -25,7 +25,7 @@ void writeToCache(const std::string& seed, const long& count)
 
 void addEventSubscriptions()
 {
-	std::shared_ptr<Callback> listner(new FileEventListner("ping.txt"));
+	std::shared_ptr<Callback> listner(new FileEventListner<std::string, std::string>("ping.txt"));
 	cache.subscribe(listner);
 	mainWait = true;
 	while(finish != true)

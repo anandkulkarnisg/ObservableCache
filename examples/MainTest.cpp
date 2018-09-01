@@ -9,9 +9,9 @@ ObservableCache<std::string, std::string> testCache(10);
 
 int main(int argc, char* argv[])
 {
-	std::shared_ptr<Callback> streamEventListner(new StreamEventListner);
-	std::shared_ptr<Callback> fileEventListner(new FileEventListner("output.txt"));
-	std::shared_ptr<Callback> fileEventListner2(new FileEventListner("output2.txt"));
+	std::shared_ptr<Callback> streamEventListner(new StreamEventListner<std::string, std::string>());
+	std::shared_ptr<Callback> fileEventListner(new FileEventListner<std::string, std::string>("output.txt"));
+	std::shared_ptr<Callback> fileEventListner2(new FileEventListner<std::string, std::string>("output2.txt"));
 
 	testCache.subscribe(streamEventListner);
 	testCache.subscribe(fileEventListner2);
