@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/anand/git/ObservableCache/examples/Example3.cpp
+iostream
+-
+string
+-
+thread
+-
+memory
+-
+chrono
+-
+ObservableCache.h
+/home/anand/git/ObservableCache/examples/ObservableCache.h
+

@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC  -std=c++17 -g -Wall -pedantic -I/home/anand/git/ObservableCache  -shared -Wl,-soname,libObservableCache.so -o libObservableCache.so CMakeFiles/ObservableCache.dir/ObservableCache.cpp.o CMakeFiles/ObservableCache.dir/ThreadSafeCache.cpp.o 
