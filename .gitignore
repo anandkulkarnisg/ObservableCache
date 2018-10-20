@@ -4,3 +4,19 @@
 output.txt
 output2.txt
 ping.txt
+
+#From tool cmakegit.
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+*.swp
+valgrind.csv
+
+#From tool cmakegit.
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+*.swp
+valgrind.csv
