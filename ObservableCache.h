@@ -3,6 +3,7 @@
 #include<algorithm>
 #include<map>
 #include<sstream>
+#include<utility>
 
 #include "StreamEventListner.h"
 #include "ThreadSafeCache.h"
@@ -26,7 +27,7 @@ template<typename T1, typename T2> class ObservableCache : private boost::noncop
 		void subscribe(const std::weak_ptr<Callback>&);				// The observers can register for events. everytime there is an update to cache it is published to the event Listners.
 		bool unsubscribe(const std::shared_ptr<Callback>&);			// Remove or unsubscribe a listner.
 		int evict();												// Periodically evict/remove lapsed listners.
-		T2 get(const T1&);											// get an Item from Cache.
+		std::pair<bool,T2> get(const T1&);							// get an Item from Cache.
 		bool put(const std::pair<T1, T2>&);							// put an item into Cache. Then alert the listners.
 		size_t size() const;										// Get the size of the cache.
 		int observerCount();										// Active observers count at any given time.

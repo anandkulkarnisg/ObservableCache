@@ -12,7 +12,7 @@ template<typename T1, typename T2> ThreadSafeCache<T1,T2>::ThreadSafeCache()
 }
 
 // Get Function to get an item from the ThreadSafeCache. returns the value of a key if this is present in the cache.
-template<typename T1, typename T2> T2 ThreadSafeCache<T1,T2>::get(const T1& keyItem)
+template<typename T1, typename T2> pair<bool, T2> ThreadSafeCache<T1,T2>::get(const T1& keyItem)
 {
 	// Take a read only lock and then try to identify if the item is present in the cache.
 	shared_lock<shared_mutex> lock(m_readWriteMutex);	
@@ -21,10 +21,10 @@ template<typename T1, typename T2> T2 ThreadSafeCache<T1,T2>::get(const T1& keyI
 	if( iter != m_InternalThreadSafeCache.end())
 	{
 		lock.unlock();
-		return(iter->second);
+		return(make_pair(true, iter->second));
 	}
 
-	return(nullptr);
+	return(make_pair(false, nullptr));
 }
 
 // Method that does the cache update with a given item.

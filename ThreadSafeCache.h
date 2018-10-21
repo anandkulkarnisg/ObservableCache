@@ -6,6 +6,7 @@
 #include<vector>
 #include<memory>
 #include<map>
+#include<utility>
 #include <boost/core/noncopyable.hpp>
 
 #include "Callback.h"
@@ -25,7 +26,7 @@ template<typename T1, typename T2> class ThreadSafeCache : private boost::noncop
 	public:
 		ThreadSafeCache();													// Default constructor.	
 		bool upsert(const std::pair<T1, T2>&);							    // This method is used to update the cache , returns a status if update was successfull / fail.
-		T2 get(const T1&);													// get an Item from cache in read only mode.
+		std::pair<bool, T2> get(const T1&);									// get an Item from cache in read only mode.
 		size_t size() const;												// return the size of map.
 };
 

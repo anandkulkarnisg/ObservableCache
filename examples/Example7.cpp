@@ -17,13 +17,16 @@ void funcWrite()
 	string result;
 	while(i<100)
 	{
-		result=ptr->get("Anand");
-		if(result == "Apparao Kulkarni")
+		pair<bool, string> result=ptr->get("Anand");
+		if(result.first)
+		{
+		if(result.second == "Apparao Kulkarni")
 			ptr->upsert(make_pair<string, string>("Anand", "Peter Thomas"));
-		if(result == "Peter Thomas")
+		if(result.second == "Peter Thomas")
 			ptr->upsert(make_pair<string, string>("Anand", "Albert Decosta"));		
-		if(result == "Albert Decosta")
+		if(result.second == "Albert Decosta")
 			ptr->upsert(make_pair<string, string>("Anand", "Apparao Kulkarni"));
+		}
 
 		this_thread::sleep_for(chrono::milliseconds(500));
 		++i;
@@ -35,8 +38,9 @@ void funcRead()
 	string result;
 	while(i<100)
 	{
-		result = ptr->get("Anand");
-		cout << "The result item from thread id = " << this_thread::get_id() << " is = " << result << endl;
+		pair<bool, string> result = ptr->get("Anand");
+		if(result.first)
+			cout << "The result item from thread id = " << this_thread::get_id() << " is = " << result.second << endl;
 		this_thread::sleep_for(chrono::milliseconds(100));
 	}
 }

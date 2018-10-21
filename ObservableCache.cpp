@@ -31,7 +31,7 @@ template<typename T1, typename T2> bool ObservableCache<T1,T2>::unsubscribe(cons
 {
 	// Please note that unsubscribe means the observer is still active. 
 	// but it does not want the events anymore. We need to simply remove it from subscription list. 
- 
+
 	string eventListnerKey = eventListner->getId();
 	const auto& iter = m_eventListners.find(eventListnerKey);
 	if(iter != m_eventListners.end())
@@ -45,12 +45,10 @@ template<typename T1, typename T2> bool ObservableCache<T1,T2>::unsubscribe(cons
 }
 
 // Implement a method to get an Item from the cache. Else return nullptr.
-template<typename T1, typename T2> T2 ObservableCache<T1,T2>::get(const T1& keyItem)
+template<typename T1, typename T2> pair<bool, T2> ObservableCache<T1,T2>::get(const T1& keyItem)
 {
-	if(!keyItem.empty())
-		return(m_internalCache.get(keyItem));
-	else
-		return("");
+	pair<bool, T2> returnItem = m_internalCache.get(keyItem);
+	return(returnItem);
 }
 
 // Implement a method to insert/update an item into the Cache. 
