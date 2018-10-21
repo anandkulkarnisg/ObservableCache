@@ -88,8 +88,10 @@ template<typename T1, typename T2> int ObservableCache<T1,T2>::evict()
 	for(const auto& iter : m_eventListners)
 	{
 		if(iter.second.expired())
+		{
 			m_eventListners.erase(iter.first);
-		++lapseCount;
+			++lapseCount;
+		}
 	}
 	lock.unlock();
 	return(lapseCount);
