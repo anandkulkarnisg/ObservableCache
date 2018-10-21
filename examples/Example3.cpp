@@ -8,7 +8,7 @@
 
 using namespace std;
 
-ObservableCache<string, string> cache(10);
+ObservableCache<string, string> cache;
 bool finish = false;
 
 void writeToCache(const string& seed, const long& count)

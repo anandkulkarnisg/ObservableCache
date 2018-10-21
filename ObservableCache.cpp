@@ -6,57 +6,42 @@
 using namespace std;
 
 // Implement the constructor for the ObservableCache.
-template<typename T1, typename T2> ObservableCache<T1,T2>::ObservableCache(const int& eventListnerSize) : m_eventListnerSize(eventListnerSize) 
+template<typename T1, typename T2> ObservableCache<T1,T2>::ObservableCache()
 { 
-	m_eventListners.reserve(m_eventListnerSize);
+
 } 
 
 // Implement subscribe method. 
-template<typename T1, typename T2> void ObservableCache<T1,T2>::subscribe(const std::weak_ptr<Callback>& eventListner)
+template<typename T1, typename T2> void ObservableCache<T1,T2>::subscribe(const weak_ptr<Callback>& eventListner)
 {
 	// Take a mutex Lock and insert the eventListner into the vector.
-	std::unique_lock<std::shared_mutex> lock(m_mutex);
+	unique_lock<shared_mutex> lock(m_mutex);
 
 	// Push the item.
-	m_eventListners.emplace_back(eventListner);
+	auto sp = eventListner.lock();	
+	string eventListnerKey = sp->getId();
+	m_eventListners[eventListnerKey]=eventListner;
 
 	// Release the lock.
 	lock.unlock();	
 }
 
 // Implement the unsubscribe method.
-template<typename T1, typename T2> bool ObservableCache<T1,T2>::unsubscribe(const std::shared_ptr<Callback>& eventListner)
+template<typename T1, typename T2> bool ObservableCache<T1,T2>::unsubscribe(const shared_ptr<Callback>& eventListner)
 {
 	// Please note that unsubscribe means the observer is still active. 
 	// but it does not want the events anymore. We need to simply remove it from subscription list. 
-	bool isFound = false;
-	int idx = 0;
-
-	// We need a lock around the vector before proceeding further.
-	std::unique_lock<std::shared_mutex> lock(m_mutex);
-	for(const auto& iter : m_eventListners)
+ 
+	string eventListnerKey = eventListner->getId();
+	const auto& iter = m_eventListners.find(eventListnerKey);
+	if(iter != m_eventListners.end())
 	{
-		if(!iter.expired())
-		{
-			auto sp = iter.lock();
-			if(!iter.expired())
-			{
-				if(*sp.get() == *eventListner.get())
-				{
-					isFound=true;
-					break;
-				}
-			}	
-		}
-		++idx;
+		unique_lock<shared_mutex> lock(m_mutex);
+		m_eventListners.erase(eventListnerKey);
 	}
-
-	if(isFound)
-	{
-		m_eventListners.erase(m_eventListners.begin() + idx);
-	}
-	lock.unlock();
-	return(isFound);
+	else
+		return(false);
+	return(true);
 }
 
 // Implement a method to get an Item from the cache. Else return nullptr.
@@ -69,7 +54,7 @@ template<typename T1, typename T2> T2 ObservableCache<T1,T2>::get(const T1& keyI
 }
 
 // Implement a method to insert/update an item into the Cache. 
-template<typename T1, typename T2> bool ObservableCache<T1,T2>::put(const std::pair<T1 , T2>& pairRef)
+template<typename T1, typename T2> bool ObservableCache<T1,T2>::put(const pair<T1 , T2>& pairRef)
 {
 	bool returnStatus = false;
 
@@ -79,13 +64,13 @@ template<typename T1, typename T2> bool ObservableCache<T1,T2>::put(const std::p
 	returnStatus = m_internalCache.upsert(pairRef);
 	if(returnStatus)
 	{
-		std::shared_lock<std::shared_mutex> lock(m_mutex); // Our aim is to publish as fast as possible. It is upto the listner to handle these events incoming via onTick as fast as possible.
+		shared_lock<shared_mutex> lock(m_mutex); // Our aim is to publish as fast as possible. It is upto the listner to handle these events incoming via onTick as fast as possible.
 		for(const auto& iter : m_eventListners)
 		{
-			if(!iter.expired())
+			if(!iter.second.expired())
 			{
-				auto sp = iter.lock();	// Double check if iter expiry needed as weak_ptr expired false indication may turn out to be racy in multi threaded code.
-				if(!iter.expired())
+				auto sp = iter.second.lock();	// Double check if iter expiry needed as weak_ptr expired false indication may turn out to be racy in multi threaded code.
+				if(!iter.second.expired())
 				{
 					sp->onTick(pairRef);	
 				}
@@ -101,12 +86,14 @@ template<typename T1, typename T2> int ObservableCache<T1,T2>::evict()
 {
 	int lapseCount=0;
 	// We need a exclusive write lock on the m_eventListners to clean it up.
-	std::unique_lock<std::shared_mutex> lock(m_mutex);
-	int startSize = m_eventListners.size();
-	m_eventListners.erase(std::remove_if(m_eventListners.begin(), m_eventListners.end(), [&](const std::weak_ptr<Callback>& ptr){return ptr.expired();}), m_eventListners.end());
-	int endSize = m_eventListners.size();
+	unique_lock<shared_mutex> lock(m_mutex);
+	for(const auto& iter : m_eventListners)
+	{
+		if(iter.second.expired())
+			m_eventListners.erase(iter.first);
+		++lapseCount;
+	}
 	lock.unlock();
-	lapseCount=startSize-endSize;
 	return(lapseCount);
 }
 
@@ -119,8 +106,8 @@ template<typename T1, typename T2> size_t ObservableCache<T1,T2>::size() const
 // Return the size of the observers count.
 template<typename T1, typename T2> int ObservableCache<T1,T2>::observerCount()
 {
-	std::shared_lock<std::shared_mutex> lock(m_mutex);
+	shared_lock<shared_mutex> lock(m_mutex);
 	return(m_eventListners.size());
 }
 
-template class ObservableCache<std::string, std::string>;
+template class ObservableCache<string, string>;

@@ -189,6 +189,19 @@ examples/Example3.out/fast:
 .PHONY : examples/Example3.out/fast
 
 #=============================================================================
+# Target rules for targets named examples/Example7.out
+
+# Build rule for target.
+examples/Example7.out: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 examples/Example7.out
+.PHONY : examples/Example7.out
+
+# fast build rule for target.
+examples/Example7.out/fast:
+	$(MAKE) -f CMakeFiles/examples/Example7.out.dir/build.make CMakeFiles/examples/Example7.out.dir/build
+.PHONY : examples/Example7.out/fast
+
+#=============================================================================
 # Target rules for targets named examples/Example1.out
 
 # Build rule for target.
@@ -417,6 +430,33 @@ examples/Example6.cpp.s:
 	$(MAKE) -f CMakeFiles/examples/Example6.out.dir/build.make CMakeFiles/examples/Example6.out.dir/examples/Example6.cpp.s
 .PHONY : examples/Example6.cpp.s
 
+examples/Example7.o: examples/Example7.cpp.o
+
+.PHONY : examples/Example7.o
+
+# target to build an object file
+examples/Example7.cpp.o:
+	$(MAKE) -f CMakeFiles/examples/Example7.out.dir/build.make CMakeFiles/examples/Example7.out.dir/examples/Example7.cpp.o
+.PHONY : examples/Example7.cpp.o
+
+examples/Example7.i: examples/Example7.cpp.i
+
+.PHONY : examples/Example7.i
+
+# target to preprocess a source file
+examples/Example7.cpp.i:
+	$(MAKE) -f CMakeFiles/examples/Example7.out.dir/build.make CMakeFiles/examples/Example7.out.dir/examples/Example7.cpp.i
+.PHONY : examples/Example7.cpp.i
+
+examples/Example7.s: examples/Example7.cpp.s
+
+.PHONY : examples/Example7.s
+
+# target to generate assembly for a file
+examples/Example7.cpp.s:
+	$(MAKE) -f CMakeFiles/examples/Example7.out.dir/build.make CMakeFiles/examples/Example7.out.dir/examples/Example7.cpp.s
+.PHONY : examples/Example7.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -431,6 +471,7 @@ help:
 	@echo "... ObservableCache"
 	@echo "... examples/Example2.out"
 	@echo "... examples/Example3.out"
+	@echo "... examples/Example7.out"
 	@echo "... examples/Example1.out"
 	@echo "... ObservableCache.o"
 	@echo "... ObservableCache.i"
@@ -456,6 +497,9 @@ help:
 	@echo "... examples/Example6.o"
 	@echo "... examples/Example6.i"
 	@echo "... examples/Example6.s"
+	@echo "... examples/Example7.o"
+	@echo "... examples/Example7.i"
+	@echo "... examples/Example7.s"
 .PHONY : help
 
 
