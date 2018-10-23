@@ -14,16 +14,16 @@ template<typename T1, typename T2> ObservableCache<T1,T2>::ObservableCache()
 // Implement subscribe method. 
 template<typename T1, typename T2> void ObservableCache<T1,T2>::subscribe(const weak_ptr<Callback>& eventListner)
 {
-	// Take a mutex Lock and insert the eventListner into the vector.
-	unique_lock<shared_mutex> lock(m_mutex);
+	{
+		// Take a mutex Lock and insert the eventListner into the vector.
+		unique_lock<shared_mutex> lock(m_mutex);
 
-	// Push the item.
-	auto sp = eventListner.lock();	
-	string eventListnerKey = sp->getId();
-	m_eventListners[eventListnerKey]=eventListner;
+		// Push the item.
+		auto sp = eventListner.lock();	
+		string eventListnerKey = sp->getId();
+		m_eventListners[eventListnerKey]=eventListner;
+	}
 
-	// Release the lock.
-	lock.unlock();	
 }
 
 // Implement the unsubscribe method.

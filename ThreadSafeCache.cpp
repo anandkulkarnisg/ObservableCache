@@ -15,10 +15,10 @@ template<typename T1, typename T2> ThreadSafeCache<T1,T2>::ThreadSafeCache()
 template<typename T1, typename T2> pair<bool, T2> ThreadSafeCache<T1,T2>::get(const T1& keyItem)
 {
 	// Take a read only lock and then try to identify if the item is present in the cache.
-	shared_lock<shared_mutex> lock(m_readWriteMutex);	
+	shared_lock<shared_mutex> lock(m_mutex);	
 
-	auto iter = m_InternalThreadSafeCache.find(keyItem);
-	if( iter != m_InternalThreadSafeCache.end())
+	auto iter = m_cache.find(keyItem);
+	if( iter != m_cache.end())
 	{
 		lock.unlock();
 		return(make_pair(true, iter->second));
@@ -36,10 +36,10 @@ template<typename T1, typename T2> bool ThreadSafeCache<T1,T2>::upsert(const pai
 	bool updateRequired = false;	
 
 	// First take a read only lock and check if the item is present and if they kev/value are same. Then decide to take exclusive lock and update the item.
-	shared_lock<shared_mutex> lock(m_readWriteMutex);
+	shared_lock<shared_mutex> lock(m_mutex);
 
-	auto iter = m_InternalThreadSafeCache.find(upsertItem.first);
-	if( iter == m_InternalThreadSafeCache.end())
+	auto iter = m_cache.find(upsertItem.first);
+	if( iter == m_cache.end())
 	{
 		updateRequired = true;	
 	}
@@ -56,8 +56,8 @@ template<typename T1, typename T2> bool ThreadSafeCache<T1,T2>::upsert(const pai
 	// Attempt an exclusive write lock now to update the content only if the updateRequired is true.
 	if(updateRequired)
 	{
-		unique_lock<shared_mutex> writeLock(m_readWriteMutex);
-		m_InternalThreadSafeCache[upsertItem.first] = upsertItem.second;
+		unique_lock<shared_mutex> writeLock(m_mutex);
+		m_cache[upsertItem.first] = upsertItem.second;
 	}	
 
 	return(updateRequired);
@@ -65,8 +65,27 @@ template<typename T1, typename T2> bool ThreadSafeCache<T1,T2>::upsert(const pai
 
 template<typename T1, typename T2> size_t ThreadSafeCache<T1,T2>::size() const
 {
-	shared_lock<shared_mutex> lock(m_readWriteMutex);
-	return(m_InternalThreadSafeCache.size());	
+	shared_lock<shared_mutex> lock(m_mutex);
+	return(m_cache.size());	
+}
+
+template<typename T1, typename T2> bool ThreadSafeCache<T1,T2>::erase(const T1& keyItem)
+{
+	{
+		shared_lock<shared_mutex> readLock(m_mutex);
+		const auto& iter = m_cache.find(keyItem);
+		if(iter==m_cache.end())
+			return(false);
+	}
+	unique_lock<shared_mutex> exclusiveLock(m_mutex);
+	const auto& iter = m_cache.find(keyItem);	// We need to check again since it may have been delete by another thread.
+	if(iter!=m_cache.end())
+	{
+		m_cache.erase(keyItem);
+		return(true);
+	}
+
+	return(false);
 }
 
 template class ThreadSafeCache<string, string>;
