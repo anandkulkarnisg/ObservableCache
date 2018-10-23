@@ -47,7 +47,7 @@ template<typename T1, typename T2> bool ObservableCache<T1,T2>::unsubscribe(cons
 // Implement a method to get an Item from the cache. Else return nullptr.
 template<typename T1, typename T2> pair<bool, T2> ObservableCache<T1,T2>::get(const T1& keyItem)
 {
-	pair<bool, T2> returnItem = m_internalCache.get(keyItem);
+	pair<bool, T2> returnItem = m_cache.get(keyItem);
 	return(returnItem);
 }
 
@@ -59,7 +59,7 @@ template<typename T1, typename T2> bool ObservableCache<T1,T2>::put(const pair<T
 	if(pairRef.first.empty() || pairRef.second.empty())
 		return(returnStatus);
 
-	returnStatus = m_internalCache.upsert(pairRef);
+	returnStatus = m_cache.upsert(pairRef);
 	if(returnStatus)
 	{
 		shared_lock<shared_mutex> lock(m_mutex); // Our aim is to publish as fast as possible. It is upto the listner to handle these events incoming via onTick as fast as possible.
@@ -76,6 +76,13 @@ template<typename T1, typename T2> bool ObservableCache<T1,T2>::put(const pair<T
 		}	
 		lock.unlock();
 	}
+	return(returnStatus);
+}
+
+// Implement a method to remove an item from the cache via the key.
+template<typename T1, typename T2> bool ObservableCache<T1,T2>::erase(const T1& keyItem)
+{
+	bool returnStatus = m_cache.erase(keyItem);
 	return(returnStatus);
 }
 
@@ -100,7 +107,7 @@ template<typename T1, typename T2> int ObservableCache<T1,T2>::evict()
 // return the size of the Internal cache.
 template<typename T1, typename T2> size_t ObservableCache<T1,T2>::size() const
 {
-	return(m_internalCache.size());
+	return(m_cache.size());
 }
 
 // Return the size of the observers count.

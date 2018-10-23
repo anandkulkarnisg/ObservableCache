@@ -18,7 +18,7 @@ using namespace std;
 template<typename T1, typename T2> class ObservableCache : private boost::noncopyable
 {
 	private:
-		ThreadSafeCache<T1,T2> m_internalCache;						// This is the thread safe cache that allows multiple readers and writers. Implemented using shared_lock / reader-writer lock.	
+		ThreadSafeCache<T1,T2> m_cache;						// This is the thread safe cache that allows multiple readers and writers. Implemented using shared_lock / reader-writer lock.	
 		std::shared_mutex m_mutex;									// This is used to synchronize the register and deregister of observers which need notification.		
 		std::map<std::string, std::weak_ptr<Callback>> m_eventListners;	// Used to store the the observers. We store weak references so that we dont encounter lapsed listner problem. 
 	
@@ -29,6 +29,7 @@ template<typename T1, typename T2> class ObservableCache : private boost::noncop
 		int evict();												// Periodically evict/remove lapsed listners.
 		std::pair<bool,T2> get(const T1&);							// get an Item from Cache.
 		bool put(const std::pair<T1, T2>&);							// put an item into Cache. Then alert the listners.
+		bool erase(const T1&);										// remove an item from the ThreadSafe Cache.
 		size_t size() const;										// Get the size of the cache.
 		int observerCount();										// Active observers count at any given time.
 };
